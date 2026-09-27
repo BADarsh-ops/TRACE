@@ -1,0 +1,8 @@
+import {Router} from 'express';import bcrypt from 'bcryptjs';import jwt from 'jsonwebtoken';import {z} from 'zod';import User from '../models/User.js';import {authenticate} from '../middleware/auth.js';import {asyncHandler,AppError} from '../utils/errors.js';
+const router=Router();const signupSchema=z.object({name:z.string().trim().min(2).max(100),email:z.string().email(),password:z.string().min(10).max(128)});
+const safe=u=>({id:u._id,name:u.name,email:u.email,role:u.role});const token=u=>jwt.sign({sub:u._id.toString(),role:u.role},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRES_IN||'8h'});
+router.post('/signup',asyncHandler(async(req,res)=>{const input=signupSchema.parse(req.body);if(await User.exists({email:input.email.toLowerCase()}))throw new AppError(409,'An account with that email already exists.');const user=await User.create({name:input.name,email:input.email,passwordHash:await bcrypt.hash(input.password,12),role:'AUTHORIZED_USER'});res.status(201).json({user:safe(user),token:token(user)});}));
+router.post('/login',asyncHandler(async(req,res)=>{const email=String(req.body.email||'').toLowerCase();const user=await User.findOne({email}).select('+passwordHash');if(!user||!user.active||!await bcrypt.compare(String(req.body.password||''),user.passwordHash))throw new AppError(401,'Email or password is incorrect.');res.json({user:safe(user),token:token(user)});}));
+router.post('/logout',authenticate,(req,res)=>res.json({message:'Signed out. Remove the local session token.'}));
+router.get('/me',authenticate,(req,res)=>res.json({user:safe(req.user)}));
+export default router;

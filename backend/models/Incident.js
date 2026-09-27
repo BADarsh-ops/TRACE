@@ -1,0 +1,3 @@
+import mongoose from 'mongoose';
+const schema = new mongoose.Schema({ incidentCode:{type:String,unique:true,index:true}, title:{type:String,required:true}, description:{type:String,default:''}, status:{type:String,enum:['DRAFT','PROCESSING','UNDER_REVIEW','COMPLETED','FAILED'],default:'DRAFT'}, owner:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true}, assignedUsers:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}], processingStatus:{type:String,default:'NOT_STARTED'}, processedAt:Date, report:{type:mongoose.Schema.Types.Mixed,default:null} },{timestamps:true});
+export default mongoose.model('Incident',schema);

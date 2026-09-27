@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {PROCESS_STAGES,processStagePath} from '../utils/processFlow.js';
+test('workspace process flow keeps the required seven stages in order',()=>{assert.deepEqual(PROCESS_STAGES.map(s=>s[1]),['Unorganized Evidence','Information Extraction','Chronological Timeline','Missing Information','Contradiction Detection','Redaction','Incident Report']);});
+test('process flow links each stage to its incident route',()=>{assert.equal(processStagePath('abc','evidence'),'/incidents/abc');assert.equal(processStagePath('abc','extraction'),'/incidents/abc/extraction');assert.equal(processStagePath('abc','report'),'/incidents/abc/report');});

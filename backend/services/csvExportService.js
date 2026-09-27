@@ -1,0 +1,5 @@
+import {maskValue} from './redactionService.js';
+export const CSV_HEADERS=['Incident_ID','Incident_Title','Evidence_ID','Evidence_File','Evidence_Type','Uploaded_By','Event_ID','Event_Time','Event_Type','Event_Description','Entity_Type','Entity_Value','Normalized_Value','Confidence','Conflict_Type','Conflict_Severity','Conflict_Description','Missing_Field','Relationship_Type','Source_Evidence_ID','PII_Detected','Redaction_Applied'];
+const PII_TYPES=new Set(['PHONE','EMAIL','ACCOUNT_NUMBER','UPI_ID','ADDRESS','GOVERNMENT_ID']);
+export function csvEntityValues(entity,privacyMode=true){if(!entity)return {value:'',normalizedValue:'',pii:false,redacted:false};const pii=PII_TYPES.has(entity.type);const redacted=Boolean(pii&&privacyMode);return {value:redacted?maskValue(entity.type,entity.value):entity.value,normalizedValue:redacted?maskValue(entity.type,entity.normalizedValue):entity.normalizedValue,pii,redacted};}
+export function toCSV(rows){return '\ufeff'+rows.map(row=>row.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\r\n');}

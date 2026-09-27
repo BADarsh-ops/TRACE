@@ -1,0 +1,2 @@
+export const PROCESS_STAGES=[['evidence','Unorganized Evidence','Evidence'],['extraction','Information Extraction','Extraction'],['timeline','Chronological Timeline','Timeline'],['missing','Missing Information','Missing'],['conflicts','Contradiction Detection','Conflicts'],['privacy','Redaction','Redaction'],['report','Incident Report','Report']];
+export function processStagePath(incidentId,key){return key==='evidence'?`/incidents/${incidentId}`:`/incidents/${incidentId}/${key}`;}
